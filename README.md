@@ -50,3 +50,40 @@ You have been hired to complete an API for a blog app. The previous developer wo
   - [ ] Push app to Heroku - Note: app probably won't work yet 'cause there's no production database
   - [ ] Create a production database on Elephant SQL. Use `query.sql` from earlier to easily recreate database
   - [ ] Configure Heroku config vars to use `DATABASE_URL` and the Elephant SQL connection string  
+
+
+## Add Authors and Tags
+The boss is very impressed with the quick turn-around. She is so impressed that she is wondering if you could **just** add `authors` and `tags` too. You think about for a bit and decide it should be relatively easy to just update the app and api. But there is a wrinkle, that sales team has already begun using the first version. After pondering your options for a bit you remember the already modular and uses express router so you decide to create a **/v2**. 
+
+You decide to create your own punch list
+
+### Tasks: 
+- [x] Create a Skeleton Node and Express app
+- [x] Create set of CRUD endpoints at `/api/v1/stories`
+
+#### 2) Update Database
+
+Next, we'll update our database. Our approach is similar to the solution from [Challenge: blog app database](https://courses.thinkful.com/node-sql-001v1/project/1.1.6)
+
+- Add a `users` table to your database with the following schema.
+
+```
+  id serial PRIMARY KEY,
+  email text NOT NULL,
+  username text NOT NULL    
+```
+
+- And add a `author_id` field to the stories table which references the users table. Note, when we delete a story, we **do not** want to delete the associate user, so make the reference `ON DELETE RESTRICT`. You can find more details in [Joins, related data, and constraints](https://courses.thinkful.com/node-sql-001v1/assignment/1.1.4)
+
+- Finally, add a few dummy users to the dev database and update the dummy stories to have authors.
+
+#### 3) Update endpoints
+Now, we can begin updating the `/v2/stories` to support author/users.
+- Duplicate the `v1StoriesRouter.js` file from above and name it `v2StoriesRouter.js`
+- Wire-up the router on the `server.js`. You did this step earlier so we won't repeat the details
+- Update database queries in the `/v2/stories` endpoints use the new authors/user relationship
+- Hints:
+  - The GET endpoints will require `.innerJoin()` on `users`
+  - The POST and PUT endpoints will require some additional work. After you create or update the story, you will need to query the database again to generate a response that includes the 'username'. 
+  - The DELETE endpoint should work as-is 
+  

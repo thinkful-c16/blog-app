@@ -16,15 +16,15 @@ app.use(bodyParser.json());
 
 app.use('/api/v1', storiesRouter);
 
-// Catch-all endpoint for requests to non-existent endpoint
+// 404 catch-all
 app.use(function (req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
-// Catch-all endpoint for errors
-// Prevent stacktrace from being leaked to user in production
+// Error handler
+// Prevent stacktrace from being leaked if 'env' is 'production'
 app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.json({
