@@ -55,35 +55,42 @@ You have been hired to complete an API for a blog app. The previous developer wo
 ## Add Authors and Tags
 The boss is very impressed with the quick turn-around. She is so impressed that she is wondering if you could **just** add `authors` and `tags` too. You think about for a bit and decide it should be relatively easy to just update the app and api. But there is a wrinkle, that sales team has already begun using the first version. After pondering your options for a bit you remember the already modular and uses express router so you decide to create a **/v2**. 
 
-You decide to create your own punch list
+You decide to create your own punch list...
 
-### Tasks: 
-- [x] Create a Skeleton Node and Express app
-- [x] Create set of CRUD endpoints at `/api/v1/stories`
-
-#### 2) Update Database
-
-Next, we'll update our database. Our approach is similar to the solution from [Challenge: blog app database](https://courses.thinkful.com/node-sql-001v1/project/1.1.6)
-
-- Add a `users` table to your database with the following schema.
-
-```
-  id serial PRIMARY KEY,
-  email text NOT NULL,
-  username text NOT NULL    
-```
-
-- And add a `author_id` field to the stories table which references the users table. Note, when we delete a story, we **do not** want to delete the associate user, so make the reference `ON DELETE RESTRICT`. You can find more details in [Joins, related data, and constraints](https://courses.thinkful.com/node-sql-001v1/assignment/1.1.4)
-
-- Finally, add a few dummy users to the dev database and update the dummy stories to have authors.
-
-#### 3) Update endpoints
-Now, we can begin updating the `/v2/stories` to support author/users.
-- Duplicate the `v1StoriesRouter.js` file from above and name it `v2StoriesRouter.js`
-- Wire-up the router on the `server.js`. You did this step earlier so we won't repeat the details
-- Update database queries in the `/v2/stories` endpoints use the new authors/user relationship
-- Hints:
-  - The GET endpoints will require `.innerJoin()` on `users`
-  - The POST and PUT endpoints will require some additional work. After you create or update the story, you will need to query the database again to generate a response that includes the 'username'. 
+### Tasks:
+- Update the Database: 
+  - [ ] Create an `users` table, similar to the solution from [Challenge: blog app database](https://courses.thinkful.com/node-sql-001v1/project/1.1.6). It has the following columns.
+    - 3 Columns:
+      - `id`: an autoincrementing integer
+      - `username`: regular text. Required.
+      - `email`: regular text. Required.
+  > Note: the table name. The table will contain all `users`, both generic users and blog post authors.
+  - [ ] Add a `author_id` field to the stories table which references the users table.
+  > Note, when we delete a story, we **do not** want to delete the associate user, so make the reference `ON DELETE RESTRICT`. Recall [Joins, related data, and constraints](https://courses.thinkful.com/node-sql-001v1/assignment/1.1.4)
+  - [ ] add a few dummy users to the dev database and update the dummy stories to have authors.
+  ```sql
+  INSERT INTO users (email, username) VALUES
+      ('foo@example.com', 'MsFoo'),
+      ('bar@example.com', 'MrBar'),
+      ('qux@example.com', 'DrQux');
+  ```
+  - [ ] Update any dummy or seed stories data to have Authors
+- Update, create and mount router files: 
+  - [ ] Create and mount a new "V2" router:
+    - Copy the `/router/stories-router.js` router to `/router/stories-router-v2.js`
+    - Rename the `/router/stories-router.js` to `/router/stories-router-v1.js`
+    - Update `server.js`:
+      - Fix the require statement:
+      `const storiesRouter = require('./routers/stories-router');` => `const storiesRouterV1 = require('./routers/stories-router-v1');`
+      - Mount the new router by adding: 
+       `const storiesRouterV2 = require('./routers/stories-router-v2');`
+  - Update the V2 endpoints:
+    - Update `/api/v1/stories` endpoints to return or accept user information.
+      - The GET endpoints will require an `.innerJoin()` on `users`
+      - The POST and PUT endpoints will require some additional work:
+        - First `.insert()` or `.update()` the story, then execute `.select()` with `.innerJoin()` to get the updated info. 
+    - Create CRUD endpoints for the new `users` data `/api/v2/users`. They should be similar to `/api/v1/stories` above.
+  
+  
   - The DELETE endpoint should work as-is 
   
