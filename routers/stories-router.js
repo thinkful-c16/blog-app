@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 
-// this is our schema to represent a restaurant
+// this is our schema to represent a blog
 const blogSchema = mongoose.Schema({
   title: {type: String, required: true},
   content: {type: String, required: true},
